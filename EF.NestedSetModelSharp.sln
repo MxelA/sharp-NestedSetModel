@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EF.NestedSetModelSharp", "src\EF.NestedSetModelSharp\EF.NestedSetModelSharp.csproj", "{EFE70617-546A-4C48-B4D2-8B99CA8C2CC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EF.NestedSetModelSharp.Tests", "tests\EF.NestedSetModelSharp.Tests\EF.NestedSetModelSharp.Tests.csproj", "{B3A607F9-33DB-4561-B540-79FBF11A6B91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{EFE70617-546A-4C48-B4D2-8B99CA8C2CC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFE70617-546A-4C48-B4D2-8B99CA8C2CC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFE70617-546A-4C48-B4D2-8B99CA8C2CC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3A607F9-33DB-4561-B540-79FBF11A6B91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3A607F9-33DB-4561-B540-79FBF11A6B91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3A607F9-33DB-4561-B540-79FBF11A6B91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3A607F9-33DB-4561-B540-79FBF11A6B91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
