@@ -17,7 +17,7 @@ namespace EF.NestedSetModelSharp.Tests
         public Node? Blouses { get; set; }
         public Node? EveningGowns { get; set; }
         public Node? SunDresses { get; set; }
-        private List<Node> _catsTree;
+        private List<Node> _suitsTree;
 
 
         public NodeInsertTests()
@@ -169,6 +169,310 @@ namespace EF.NestedSetModelSharp.Tests
                 new Node(Suits.Name, Men.Id, 2, 9, 10)
             );
         }
+
+        [Fact]
+        public void TestInsertChildToRight()
+        {
+            Clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
+            Men = _ns.InsertBelow(Clothing.Id, NewNode("Men"), NestedSetModelInsertMode.Left);
+            Suits = _ns.InsertBelow(Men.Id, NewNode("Suits"), NestedSetModelInsertMode.Left);
+            Women = _ns.InsertNextTo(Men.Id, NewNode("Women"), NestedSetModelInsertMode.Left);
+            Blouses = _ns.InsertBelow(Women.Id, NewNode("Blouses"), NestedSetModelInsertMode.Left);
+            Skirts = _ns.InsertNextTo(Blouses.Id, NewNode("Skirts"), NestedSetModelInsertMode.Right);
+
+            Dresses = _ns.InsertBelow(Women.Id, NewNode("Dresses"), NestedSetModelInsertMode.Right);
+            AssertDb(
+                Clothing.RootId,
+                new Node(Clothing.Name, null, 0, 1, 14),
+                new Node(Women.Name, Clothing.Id, 1, 2, 9),
+                new Node(Blouses.Name, Women.Id, 2, 3, 4),
+                new Node(Skirts.Name, Women.Id, 2, 5, 6),
+                new Node(Dresses.Name, Women.Id, 2, 7, 8),
+                new Node(Men.Name, Clothing.Id, 1, 10, 13),
+                new Node(Suits.Name, Men.Id, 2, 11, 12)
+            );
+        }
+
+        [Fact]
+        public void TestInsertChildToLeft()
+        {
+            Clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
+            Men = _ns.InsertBelow(Clothing.Id, NewNode("Men"), NestedSetModelInsertMode.Left);
+            Suits = _ns.InsertBelow(Men.Id, NewNode("Suits"), NestedSetModelInsertMode.Left);
+            Women = _ns.InsertNextTo(Men.Id, NewNode("Women"), NestedSetModelInsertMode.Left);
+            Blouses = _ns.InsertBelow(Women.Id, NewNode("Blouses"), NestedSetModelInsertMode.Left);
+            Skirts = _ns.InsertNextTo(Blouses.Id, NewNode("Skirts"), NestedSetModelInsertMode.Right);
+            Dresses = _ns.InsertBelow(Women.Id, NewNode("Dresses"), NestedSetModelInsertMode.Right);
+
+            Jackets = _ns.InsertBelow(Suits.Id, NewNode("Jackets"), NestedSetModelInsertMode.Right);
+            Slacks = _ns.InsertBelow(Suits.Id, NewNode("Slacks"), NestedSetModelInsertMode.Left);
+
+            //Assert
+            AssertDb(
+                Clothing.RootId,
+                new Node(Clothing.Name, null, 0, 1, 18),
+                new Node(Women.Name, Clothing.Id, 1, 2, 9),
+                new Node(Blouses.Name, Women.Id, 2, 3, 4),
+                new Node(Skirts.Name, Women.Id, 2, 5, 6),
+                new Node(Dresses.Name, Women.Id, 2, 7, 8),
+                new Node(Men.Name, Clothing.Id, 1, 10, 17),
+                new Node(Suits.Name, Men.Id, 2, 11, 16),
+                new Node(Slacks.Name, Suits.Id, 3, 12, 13),
+                new Node(Jackets.Name, Suits.Id, 3, 14, 15)
+            );
+        }
+
+        [Fact]
+        public void TestInsertChildToLeft2()
+        {
+            Clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
+            Men = _ns.InsertBelow(Clothing.Id, NewNode("Men"), NestedSetModelInsertMode.Left);
+            Suits = _ns.InsertBelow(Men.Id, NewNode("Suits"), NestedSetModelInsertMode.Left);
+            Women = _ns.InsertNextTo(Men.Id, NewNode("Women"), NestedSetModelInsertMode.Left);
+            Blouses = _ns.InsertBelow(Women.Id, NewNode("Blouses"), NestedSetModelInsertMode.Left);
+            Skirts = _ns.InsertNextTo(Blouses.Id, NewNode("Skirts"), NestedSetModelInsertMode.Right);
+            Dresses = _ns.InsertBelow(Women.Id, NewNode("Dresses"), NestedSetModelInsertMode.Right);
+            Jackets = _ns.InsertBelow(Suits.Id, NewNode("Jackets"), NestedSetModelInsertMode.Right);
+            Slacks = _ns.InsertBelow(Suits.Id, NewNode("Slacks"), NestedSetModelInsertMode.Left);
+
+            EveningGowns = _ns.InsertBelow(Dresses.Id, NewNode("Evening Gowns"), NestedSetModelInsertMode.Left);
+
+            //Assert
+            AssertDb(
+                Clothing.RootId,
+                new Node(Clothing.Name, null, 0, 1, 20),
+                
+                new Node(Women.Name, Clothing.Id, 1, 2, 11),
+                new Node(Blouses.Name, Women.Id, 2, 3, 4),
+                new Node(Skirts.Name, Women.Id, 2, 5, 6),
+                new Node(Dresses.Name, Women.Id, 2, 7, 10),
+                new Node(EveningGowns.Name, Dresses.Id, 3, 8, 9),
+
+                 new Node(Men.Name, Clothing.Id, 1, 12, 19),
+                 new Node(Suits.Name, Men.Id, 2, 13, 18),
+                 new Node(Slacks.Name, Suits.Id, 3, 14, 15),
+                 new Node(Jackets.Name, Suits.Id, 3, 16, 17)
+
+
+            );
+        }
+
+        [Fact]
+        public void TestInsertChildToLeft3()
+        {
+            Clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
+            Men = _ns.InsertBelow(Clothing.Id, NewNode("Men"), NestedSetModelInsertMode.Left);
+            Suits = _ns.InsertBelow(Men.Id, NewNode("Suits"), NestedSetModelInsertMode.Left);
+            Jackets = _ns.InsertBelow(Suits.Id, NewNode("Jackets"), NestedSetModelInsertMode.Right);
+            Slacks = _ns.InsertBelow(Suits.Id, NewNode("Slacks"), NestedSetModelInsertMode.Left);
+
+            Women = _ns.InsertNextTo(Men.Id, NewNode("Women"), NestedSetModelInsertMode.Left);
+            Blouses = _ns.InsertBelow(Women.Id, NewNode("Blouses"), NestedSetModelInsertMode.Left);
+            Skirts = _ns.InsertNextTo(Blouses.Id, NewNode("Skirts"), NestedSetModelInsertMode.Right);
+            Dresses = _ns.InsertBelow(Women.Id, NewNode("Dresses"), NestedSetModelInsertMode.Right);
+            EveningGowns = _ns.InsertBelow(Dresses.Id, NewNode("Evening Gowns"), NestedSetModelInsertMode.Left);
+
+            SunDresses = _ns.InsertBelow(Dresses.Id, NewNode("Sun Dresses"), NestedSetModelInsertMode.Left);
+
+
+            //Assert
+            AssertDb(
+                Clothing.RootId,
+                new Node(Clothing.Name, null, 0, 1, 22),
+
+                new Node(Women.Name, Clothing.Id, 1, 2, 13),
+                new Node(Blouses.Name, Women.Id, 2, 3, 4),
+                new Node(Skirts.Name, Women.Id, 2, 5, 6),
+                new Node(Dresses.Name, Women.Id, 2, 7, 12),
+                new Node(SunDresses.Name, Dresses.Id, 3, 8, 9),
+                new Node(EveningGowns.Name, Dresses.Id, 3, 10, 11),
+
+                 new Node(Men.Name, Clothing.Id, 1, 14, 21),
+                 new Node(Suits.Name, Men.Id, 2, 15, 20),
+                 new Node(Slacks.Name, Suits.Id, 3, 16, 17),
+                 new Node(Jackets.Name, Suits.Id, 3, 18, 19)
+
+
+            );
+        }
+
+        [Fact]
+        public void TestDeleteSubTree()
+        {
+            Clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
+            Men = _ns.InsertBelow(Clothing.Id, NewNode("Men"), NestedSetModelInsertMode.Left);
+            Suits = _ns.InsertBelow(Men.Id, NewNode("Suits"), NestedSetModelInsertMode.Left);
+            Jackets = _ns.InsertBelow(Suits.Id, NewNode("Jackets"), NestedSetModelInsertMode.Right);
+            Slacks = _ns.InsertBelow(Suits.Id, NewNode("Slacks"), NestedSetModelInsertMode.Left);
+
+            Women = _ns.InsertNextTo(Men.Id, NewNode("Women"), NestedSetModelInsertMode.Left);
+            Blouses = _ns.InsertBelow(Women.Id, NewNode("Blouses"), NestedSetModelInsertMode.Left);
+            Skirts = _ns.InsertNextTo(Blouses.Id, NewNode("Skirts"), NestedSetModelInsertMode.Right);
+            Dresses = _ns.InsertBelow(Women.Id, NewNode("Dresses"), NestedSetModelInsertMode.Right);
+            EveningGowns = _ns.InsertBelow(Dresses.Id, NewNode("Evening Gowns"), NestedSetModelInsertMode.Left);
+            SunDresses = _ns.InsertBelow(Dresses.Id, NewNode("Sun Dresses"), NestedSetModelInsertMode.Left);
+
+            // delete Suits
+            _suitsTree = _ns.Delete(Suits.Id);
+            
+            //Assert
+            AssertDb(
+                Clothing.RootId,
+                new Node(Clothing.Name, null, 0, 1, 16),
+
+                new Node(Women.Name, Clothing.Id, 1, 2, 13),
+                new Node(Blouses.Name, Women.Id, 2, 3, 4),
+                new Node(Skirts.Name, Women.Id, 2, 5, 6),
+                new Node(Dresses.Name, Women.Id, 2, 7, 12),
+                new Node(SunDresses.Name, Dresses.Id, 3, 8, 9),
+                new Node(EveningGowns.Name, Dresses.Id, 3, 10, 11),
+
+                new Node(Men.Name, Clothing.Id, 1, 14, 15)
+            );
+        }
+
+        [Fact]
+        public void TestReinsertDeletedTree()
+        {
+
+            Clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
+            Men = _ns.InsertBelow(Clothing.Id, NewNode("Men"), NestedSetModelInsertMode.Left);
+            Suits = _ns.InsertBelow(Men.Id, NewNode("Suits"), NestedSetModelInsertMode.Left);
+            Jackets = _ns.InsertBelow(Suits.Id, NewNode("Jackets"), NestedSetModelInsertMode.Right);
+            Slacks = _ns.InsertBelow(Suits.Id, NewNode("Slacks"), NestedSetModelInsertMode.Left);
+
+            Women = _ns.InsertNextTo(Men.Id, NewNode("Women"), NestedSetModelInsertMode.Left);
+            Blouses = _ns.InsertBelow(Women.Id, NewNode("Blouses"), NestedSetModelInsertMode.Left);
+            Skirts = _ns.InsertNextTo(Blouses.Id, NewNode("Skirts"), NestedSetModelInsertMode.Right);
+            Dresses = _ns.InsertBelow(Women.Id, NewNode("Dresses"), NestedSetModelInsertMode.Right);
+            EveningGowns = _ns.InsertBelow(Dresses.Id, NewNode("Evening Gowns"), NestedSetModelInsertMode.Left);
+            SunDresses = _ns.InsertBelow(Dresses.Id, NewNode("Sun Dresses"), NestedSetModelInsertMode.Left);
+
+            // delete Suits
+            _suitsTree = _ns.Delete(Suits.Id);
+
+            // And insert the removed Suits node under Women's
+            _suitsTree = _ns.InsertBelow(Women.Id, _suitsTree, NestedSetModelInsertMode.Right);
+
+            //Assert
+            AssertDb(
+                Clothing.RootId,
+                new Node(Clothing.Name, null, 0, 1, 22),
+                new Node(Men.Name, Clothing.Id, 1, 20, 21),
+                new Node(Women.Name, Clothing.Id, 1, 2, 19),
+                new Node(Blouses.Name, Women.Id, 2, 3, 4),
+                new Node(Skirts.Name, Women.Id, 2, 5, 6),
+                new Node(Dresses.Name, Women.Id, 2, 7, 12),
+                new Node(SunDresses.Name, Dresses.Id, 3, 8, 9),
+                new Node(EveningGowns.Name, Dresses.Id, 3, 10, 11),
+                new Node(Suits.Name, Women.Id, 2, 13, 18),
+                new Node(Slacks.Name, Suits.Id, 3, 14, 15),
+                new Node(Jackets.Name, Suits.Id, 3, 16, 17)
+               
+            );
+        }
+
+        //[Fact]
+        //public void TestMoveNodeToParentLeft1()
+        //{
+        //    TestReinsertDeletedTree();
+        //    _ns.MoveToParent(Humans.Id, Pets.Id, NestedSetModelInsertMode.Left);
+        //    AssertDb(
+        //        Animals.RootId,
+        //        new Node(Animals.Name, null, 0, 1, 26),
+        //        new Node(Pets.Name, Animals.Id, 1, 2, 23),
+        //        new Node(Humans.Name, Pets.Id, 2, 3, 14),
+        //        new Node(Males.Name, Humans.Id, 3, 4, 11),
+        //        new Node(Josh.Name, Males.Id, 4, 5, 6),
+        //        new Node(NonHairy.Name, Males.Id, 4, 7, 8),
+        //        new Node(Hairy.Name, Males.Id, 4, 9, 10),
+        //        new Node(Females.Name, Humans.Id, 3, 12, 13),
+        //        new Node(Cats.Name, Pets.Id, 2, 15, 22),
+        //        new Node(HouseCats.Name, Cats.Id, 3, 16, 19),
+        //        new Node(Kittens.Name, HouseCats.Id, 4, 17, 18),
+        //        new Node(Tigers.Name, Cats.Id, 3, 20, 21),
+        //        new Node(Dogs.Name, Animals.Id, 1, 24, 25)
+        //    );
+        //}
+
+        //[Fact]
+        //public void TestMoveToSiblingRight()
+        //{
+        //    TestMoveNodeToParentLeft1();
+        //    _ns.MoveToSibling(Pets.Id, Dogs.Id, NestedSetModelInsertMode.Right);
+        //    AssertDb(
+        //        Animals.RootId,
+        //        new Node(Animals.Name, null, 0, 1, 26),
+        //        new Node(Dogs.Name, Animals.Id, 1, 2, 3),
+        //        new Node(Pets.Name, Animals.Id, 1, 4, 25),
+        //        new Node(Humans.Name, Pets.Id, 2, 5, 16),
+        //        new Node(Males.Name, Humans.Id, 3, 6, 13),
+        //        new Node(Josh.Name, Males.Id, 4, 7, 8),
+        //        new Node(NonHairy.Name, Males.Id, 4, 9, 10),
+        //        new Node(Hairy.Name, Males.Id, 4, 11, 12),
+        //        new Node(Females.Name, Humans.Id, 3, 14, 15),
+        //        new Node(Cats.Name, Pets.Id, 2, 17, 24),
+        //        new Node(HouseCats.Name, Cats.Id, 3, 18, 21),
+        //        new Node(Kittens.Name, HouseCats.Id, 4, 19, 20),
+        //        new Node(Tigers.Name, Cats.Id, 3, 22, 23)
+        //    );
+        //}
+
+        //[Fact]
+        //public void TestMoveNodeToParentLeft2()
+        //{
+        //    TestMoveToSiblingRight();
+        //    _ns.MoveToParent(Humans.Id, Animals.Id, NestedSetModelInsertMode.Left);
+        //    AssertDb(
+        //        Animals.RootId,
+        //        new Node(Animals.Name, null, 0, 1, 26),
+        //        new Node(Humans.Name, Animals.Id, 1, 2, 13),
+        //        new Node(Males.Name, Humans.Id, 2, 3, 10),
+        //        new Node(Josh.Name, Males.Id, 3, 4, 5),
+        //        new Node(NonHairy.Name, Males.Id, 3, 6, 7),
+        //        new Node(Hairy.Name, Males.Id, 3, 8, 9),
+        //        new Node(Females.Name, Humans.Id, 2, 11, 12),
+        //        new Node(Dogs.Name, Animals.Id, 1, 14, 15),
+        //        new Node(Pets.Name, Animals.Id, 1, 16, 25),
+        //        new Node(Cats.Name, Pets.Id, 2, 17, 24),
+        //        new Node(HouseCats.Name, Cats.Id, 3, 18, 21),
+        //        new Node(Kittens.Name, HouseCats.Id, 4, 19, 20),
+        //        new Node(Tigers.Name, Cats.Id, 3, 22, 23)
+        //    );
+        //}
+
+        //[Fact]
+        //public void TestDeleteSubTree2()
+        //{
+        //    TestMoveNodeToParentLeft2();
+        //    _ns.Delete(Pets.Id);
+        //    AssertDb(
+        //        Animals.RootId,
+        //        new Node(Animals.Name, null, 0, 1, 16),
+        //        new Node(Humans.Name, Animals.Id, 1, 2, 13),
+        //        new Node(Males.Name, Humans.Id, 2, 3, 10),
+        //        new Node(Josh.Name, Males.Id, 3, 4, 5),
+        //        new Node(NonHairy.Name, Males.Id, 3, 6, 7),
+        //        new Node(Hairy.Name, Males.Id, 3, 8, 9),
+        //        new Node(Females.Name, Humans.Id, 2, 11, 12),
+        //        new Node(Dogs.Name, Animals.Id, 1, 14, 15)
+        //    );
+        //}
+
+        //[Fact]
+        //public void TestMultipleHierarchies()
+        //{
+        //    TestAnimalsHierarchy();
+        //    TestAnimalsHierarchy();
+        //    TestAnimalsHierarchy();
+        //    TestAnimalsHierarchy();
+        //    TestAnimalsHierarchy();
+        //}
+
+        //private void TestAnimalsHierarchy()
+        //{
+        //    TestDeleteSubTree2();
+        //}
 
         private static void AssertDb(int? rootId, params Node[] expectedNodes)
         {
