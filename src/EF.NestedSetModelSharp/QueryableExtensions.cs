@@ -7,7 +7,7 @@
             var query = queryable.Where(n => n.Left > node.Left && n.Right < node.Right);
             if (depth.HasValue)
             {
-                query = query.Where(n => n.Level == node.Level + depth.Value);
+                query = query.Where(n => n.Level <= node.Level + depth.Value);
             }
 
             return query;

@@ -428,10 +428,10 @@ namespace EF.NestedSetModelSharp
         /// </summary>
         /// <param name="nodeId">The node for which to find the path to</param>
         /// <returns></returns>
-        public IOrderedEnumerable<T> GetPathToNode(TKey nodeId)
+        public IOrderedEnumerable<T> GetAncestors(TKey nodeId)
         {
             var node = GetNodeData(nodeId);
-            return GetPathToNode(node, GetNodes(node.RootId));
+            return GetAncestors(node, GetNodes(node.RootId));
         }
 
         /// <summary>
@@ -452,7 +452,7 @@ namespace EF.NestedSetModelSharp
         /// <returns></returns>
         public static IOrderedEnumerable<T> GetPathToNode(T node, IEnumerable<T> nodeSet)
         {
-            return GetPathToNode(AsNodeData(node), nodeSet);
+            return GetAncestors(AsNodeData(node), nodeSet);
         }
 
         private static NodeData<TNullableKey> AsNodeData(T node)
@@ -466,7 +466,7 @@ namespace EF.NestedSetModelSharp
         /// <param name="node">The node for which to find the path to</param>
         /// <param name="nodeSet">The set of nodes to limit the search to</param>
         /// <returns></returns>
-        private static IOrderedEnumerable<T> GetPathToNode(NodeData<TNullableKey> node, IEnumerable<T> nodeSet)
+        private static IOrderedEnumerable<T> GetAncestors(NodeData<TNullableKey> node, IEnumerable<T> nodeSet)
         {
             return nodeSet
                     .Where(n => n.Left < node.Left && n.Right > node.Right)

@@ -2,7 +2,7 @@
 
 namespace EF.NestedSetModelSharp.Tests
 {
-    public class NodeSelectIQueriableTests : IDisposable
+    public class NodeSelectTests : IDisposable
     {
         NestedSetModelManager<AppDbContext, Node, int, int?> _ns;
         private AppDbContext _db;
@@ -20,7 +20,7 @@ namespace EF.NestedSetModelSharp.Tests
         private List<Node> _suitsTree;
 
 
-        public NodeSelectIQueriableTests()
+        public NodeSelectTests()
         {
             new AppDbContext().Database.Migrate();
             SetUp();
@@ -77,7 +77,7 @@ namespace EF.NestedSetModelSharp.Tests
             SunDresses = _ns.InsertBelow(Dresses.Id, NewNode("Sun Dresses"), NestedSetModelInsertMode.Left);
 
             //Action
-            var results = _db.Nodes.GetImmediateChildren(Clothing)
+            var results = _ns.GetImmediateChildren(Clothing.Id)
                 .OrderBy(a => a.Left)
                 .ToList();
 
@@ -105,7 +105,7 @@ namespace EF.NestedSetModelSharp.Tests
             SunDresses = _ns.InsertBelow(Dresses.Id, NewNode("Sun Dresses"), NestedSetModelInsertMode.Left);
 
             // Action
-            var immediateChildren = _db.Nodes.GetImmediateChildren(Women)
+            var immediateChildren = _ns.GetImmediateChildren(Women.Id)
                 .OrderBy(a => a.Left)
                 .ToList();
 
@@ -134,7 +134,7 @@ namespace EF.NestedSetModelSharp.Tests
             SunDresses = _ns.InsertBelow(Dresses.Id, NewNode("Sun Dresses"), NestedSetModelInsertMode.Left);
 
             // Action
-            var immediateChildren = _db.Nodes.GetDescendants(Clothing).ToList();
+            var immediateChildren = _ns.GetDescendants(Clothing.Id).ToList();
 
             // Assert
             Assert.Equal(10, immediateChildren?.Count);
@@ -159,7 +159,7 @@ namespace EF.NestedSetModelSharp.Tests
 
 
             // Action
-            var results = _db.Nodes.GetDescendants(Men).ToList();
+            var results = _ns.GetDescendants(Men.Id).ToList();
 
             // Assert
             Assert.Equal(3, results?.Count);
@@ -193,7 +193,7 @@ namespace EF.NestedSetModelSharp.Tests
             SunDresses = _ns.InsertBelow(Dresses.Id, NewNode("Sun Dresses"), NestedSetModelInsertMode.Left);
 
             // Action
-            var results = _db.Nodes.GetDescendants(Women).ToList();
+            var results = _ns.GetDescendants(Women.Id).ToList();
 
             // Assert
             Assert.Equal(5, results?.Count);
@@ -234,18 +234,17 @@ namespace EF.NestedSetModelSharp.Tests
             SunDresses = _ns.InsertBelow(Dresses.Id, NewNode("Sun Dresses"), NestedSetModelInsertMode.Left);
 
             // Action
-            var results = _db.Nodes.GetDescendants(Women, 2).ToList();
+            var results = _ns.GetDescendants(Women.Id, 2).ToList();
 
-            // Assert
             // Assert
             Assert.Equal(5, results?.Count);
 
             var nodeBlouses = results?.Where(c => c.Id == Blouses.Id).SingleOrDefault();
-            Assert.NotNull(nodeBlouses);
-
+            Assert.NotNull(nodeBlouses); 
+            
             var nodeSkirts = results?.Where(c => c.Id == Skirts.Id).SingleOrDefault();
-            Assert.NotNull(nodeSkirts);
-
+            Assert.NotNull(nodeSkirts); 
+            
             var nodeDresses = results?.Where(c => c.Id == Dresses.Id).SingleOrDefault();
             Assert.NotNull(nodeDresses);
 
@@ -274,7 +273,7 @@ namespace EF.NestedSetModelSharp.Tests
             SunDresses = _ns.InsertBelow(Dresses.Id, NewNode("Sun Dresses"), NestedSetModelInsertMode.Left);
 
             // Action
-            var results = _db.Nodes.GetDescendants(Women, 1).ToList();
+            var results = _ns.GetDescendants(Women.Id, 1).ToList();
 
             // Assert
             Assert.Equal(3, results?.Count);
@@ -307,7 +306,7 @@ namespace EF.NestedSetModelSharp.Tests
             SunDresses = _ns.InsertBelow(Dresses.Id, NewNode("Sun Dresses"), NestedSetModelInsertMode.Left);
 
             // Action
-            var results = _db.Nodes.GetAncestors(Dresses).ToList();
+            var results = _ns.GetAncestors(Dresses.Id).ToList();
 
             // Assert
             Assert.Equal(2, results?.Count);
