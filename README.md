@@ -32,7 +32,7 @@ and the node that we are manipulating. It can be a fresh model or one from datab
 
 #### Setup DB Entity (DB Model)
 
-You create a class, and you inherit INestedSetModel interface:
+Create a class, and you inherit INestedSetModel interface:
 
 ```c#
 public class ClothingCategory : INestedSetModel<Clothing, int, int?>
