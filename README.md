@@ -72,5 +72,11 @@ You can simplycreate a root node:
 ```c#
  _db = new AppDbContext();
  _ns = new NestedSetModelManager<ClothingCategory, int, int?>(_db);
-Node clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
+
+
+ClothingCategory clothingCateogry = new ClothingCategory {
+  Name = "Clothing"
+}
+ 
+_ns.InsertRoot(clothingCateogry, NestedSetModelInsertMode.Right);
 ```
