@@ -30,6 +30,41 @@ Documentation
 Suppose that we have a model `Category`; a `$node` variable is an instance of that model
 and the node that we are manipulating. It can be a fresh model or one from database.
 
+#### Setup DB Entity (DB Model)
+
+You create a class, and you inherit INestedSetModel interface:
+
+```c#
+public class ClothingCategory : INestedSetModel<Clothing, int, int?>
+{
+     public int Id { get; set; }
+     public Node Parent { get; set; }
+     public List<Node> Children { get; set; }
+     public List<Node> Descendants { get; set; }
+     public int? ParentId { get; set; }
+     public int Level { get; set; }
+     public int Left { get; set; }
+     public int Right { get; set; }
+     public string Name { get; set; }
+     public bool Moving { get; set; }
+     public Node Root { get; set; }
+     public int? RootId { get; set; }
+}
+```
+
+In DbContext register ClothingCategory entity
+```c#
+public class AppDbContext : DbContext
+{
+    public DbSet<ClothingCategory> Nodes { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ConfigureNested<ClothingCategory, int, int?>();
+    }
+}
+```
+
 #### Creating Root node
 
 When you simply creating a node, it will be appended to the end of the tree:
