@@ -67,10 +67,10 @@ public class AppDbContext : DbContext
 
 #### Creating Root node
 
-When you simply creating a node, it will be appended to the end of the tree:
+You can simplycreate a root node:
 
 ```c#
  _db = new AppDbContext();
- _ns = new NestedSetModelManager<Node, int, int?>(_db);
+ _ns = new NestedSetModelManager<ClothingCategory, int, int?>(_db);
 Node clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
 ```
