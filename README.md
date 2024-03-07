@@ -27,7 +27,7 @@ categories for shop or similar things.
 Documentation
 -------------
 
-Suppose that we have a model `Category`; a `$node` variable is an instance of that model
+Suppose that we have a model `ClothingCategory`, a `$node` variable is an instance of that model
 and the node that we are manipulating. It can be a fresh model or one from database.
 
 #### Setup DB Entity (DB Model)
