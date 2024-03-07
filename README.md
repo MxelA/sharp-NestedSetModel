@@ -56,7 +56,7 @@ In DbContext register ClothingCategory entity
 ```c#
 public class AppDbContext : DbContext
 {
-    public DbSet<ClothingCategory> Nodes { get; set; }
+    public DbSet<ClothingCategory> ClothingCategory { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
