@@ -83,15 +83,10 @@ _ns.InsertRoot(clothingCateogry, NestedSetModelInsertMode.Right);
 
 #### Insert first level child
 ```c#
-
-ClothingCategory clothing = new ClothingCategory {
-  Name = "Clothing"
-};
 ClothingCategory men = new ClothingCategory {
   Name = "Men"
 };
 
-_ns.InsertRoot(clothingRootCateogry.Id, NestedSetModelInsertMode.Right);
-_ns.InsertBelow(clothingRootCateogry.Id, men, NestedSetModelInsertMode.Left);
+_ns.InsertBelow(clothingCateogry.Id, men, NestedSetModelInsertMode.Left);
 
 ```
