@@ -15,6 +15,6 @@ a way to effectively store hierarchical data in a relational table. From wikiped
 
 ### Applications
 
-NSM shows good performance when tree is updated rarely. It is tuned to be fast for
+Nested Set Model shows good performance. It is tuned to be fast for
 getting related nodes. It'is ideally suited for building multi-depth menu or
-categories for shop.
+categories for shop or similar things.
