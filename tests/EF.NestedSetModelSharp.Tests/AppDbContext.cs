@@ -4,7 +4,7 @@ namespace EF.NestedSetModelSharp.Tests
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<Node> Nodes { get; set; }
+        public DbSet<ClothingCategory> Nodes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -14,7 +14,7 @@ namespace EF.NestedSetModelSharp.Tests
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ConfigureNested<Node, int, int?>();
+            modelBuilder.ConfigureNested<ClothingCategory, int, int?>();
         }
     }
 }

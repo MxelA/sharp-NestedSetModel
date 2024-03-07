@@ -4,20 +4,20 @@ namespace EF.NestedSetModelSharp.Tests
 {
     public class NodeSelectIQueriableTests : IDisposable
     {
-        NestedSetModelManager<Node, int, int?> _ns;
+        NestedSetModelManager<ClothingCategory, int, int?> _ns;
         private AppDbContext _db;
-        public Node? Clothing { get; set; }
-        public Node? Men { get; set; }
-        public Node? Women { get; set; }
-        public Node? Suits { get; set; }
-        public Node? Slacks { get; set; }
-        public Node? Jackets { get; set; }
-        public Node? Dresses { get; set; }
-        public Node? Skirts { get; set; }
-        public Node? Blouses { get; set; }
-        public Node? EveningGowns { get; set; }
-        public Node? SunDresses { get; set; }
-        private List<Node> _suitsTree;
+        public ClothingCategory? Clothing { get; set; }
+        public ClothingCategory? Men { get; set; }
+        public ClothingCategory? Women { get; set; }
+        public ClothingCategory? Suits { get; set; }
+        public ClothingCategory? Slacks { get; set; }
+        public ClothingCategory? Jackets { get; set; }
+        public ClothingCategory? Dresses { get; set; }
+        public ClothingCategory? Skirts { get; set; }
+        public ClothingCategory? Blouses { get; set; }
+        public ClothingCategory? EveningGowns { get; set; }
+        public ClothingCategory? SunDresses { get; set; }
+        private List<ClothingCategory> _suitsTree;
 
 
         public NodeSelectIQueriableTests()
@@ -46,7 +46,7 @@ namespace EF.NestedSetModelSharp.Tests
             _db = new AppDbContext();
 
             _db.Database.ExecuteSqlRaw("DELETE FROM \"Nodes\" where \"Id\" != 0");
-            _ns = new NestedSetModelManager<Node, int, int?>(_db);
+            _ns = new NestedSetModelManager<ClothingCategory, int, int?>(_db);
         }
 
         public void Dispose()
@@ -54,9 +54,9 @@ namespace EF.NestedSetModelSharp.Tests
             _db.Dispose();
         }
 
-        private static Node NewNode(string name)
+        private static ClothingCategory NewNode(string name)
         {
-            return new Node { Name = name };
+            return new ClothingCategory { Name = name };
         }
 
         [Fact]

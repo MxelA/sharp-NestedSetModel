@@ -4,20 +4,20 @@ namespace EF.NestedSetModelSharp.Tests
 {
     public class NodeInsertTests : IDisposable
     {
-        NestedSetModelManager<Node, int, int?> _ns;
+        NestedSetModelManager<ClothingCategory, int, int?> _ns;
         private AppDbContext _db;
-        public Node? Clothing { get; set; }
-        public Node? Men { get; set; }
-        public Node? Women { get; set; }
-        public Node? Suits { get; set; }
-        public Node? Slacks { get; set; }
-        public Node? Jackets { get; set; }
-        public Node? Dresses { get; set; }
-        public Node? Skirts { get; set; }
-        public Node? Blouses { get; set; }
-        public Node? EveningGowns { get; set; }
-        public Node? SunDresses { get; set; }
-        private List<Node> _suitsTree;
+        public ClothingCategory? Clothing { get; set; }
+        public ClothingCategory? Men { get; set; }
+        public ClothingCategory? Women { get; set; }
+        public ClothingCategory? Suits { get; set; }
+        public ClothingCategory? Slacks { get; set; }
+        public ClothingCategory? Jackets { get; set; }
+        public ClothingCategory? Dresses { get; set; }
+        public ClothingCategory? Skirts { get; set; }
+        public ClothingCategory? Blouses { get; set; }
+        public ClothingCategory? EveningGowns { get; set; }
+        public ClothingCategory? SunDresses { get; set; }
+        private List<ClothingCategory> _suitsTree;
 
 
         public NodeInsertTests()
@@ -46,7 +46,7 @@ namespace EF.NestedSetModelSharp.Tests
             _db = new AppDbContext();
 
             _db.Database.ExecuteSqlRaw("DELETE FROM \"Nodes\" where \"Id\" != 0");
-            _ns = new NestedSetModelManager<Node, int, int?>(_db);
+            _ns = new NestedSetModelManager<ClothingCategory, int, int?>(_db);
         }
 
         public void Dispose()
@@ -54,16 +54,16 @@ namespace EF.NestedSetModelSharp.Tests
             _db.Dispose();
         }
 
-        private static Node NewNode(string name)
+        private static ClothingCategory NewNode(string name)
         {
-            return new Node { Name = name };
+            return new ClothingCategory { Name = name };
         }
 
         [Fact]
         public void TestInsertRoot()
         {
             Clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
-            AssertDb(Clothing.RootId, new Node(Clothing.Name, null, 0, 1, 2));
+            AssertDb(Clothing.RootId, new ClothingCategory(Clothing.Name, null, 0, 1, 2));
         }
 
         [Fact]
@@ -74,8 +74,8 @@ namespace EF.NestedSetModelSharp.Tests
             
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 4),
-                new Node(Men.Name, Clothing.Id, 1, 2, 3)
+                new ClothingCategory(Clothing.Name, null, 0, 1, 4),
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 2, 3)
             );
         }
 
@@ -88,9 +88,9 @@ namespace EF.NestedSetModelSharp.Tests
             
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 6),
-                new Node(Men.Name, Clothing.Id, 1, 2, 5),
-                new Node(Suits.Name, Men.Id, 2, 3, 4)
+                new ClothingCategory(Clothing.Name, null, 0, 1, 6),
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 2, 5),
+                new ClothingCategory(Suits.Name, Men.Id, 2, 3, 4)
             );
         }
 
@@ -105,10 +105,10 @@ namespace EF.NestedSetModelSharp.Tests
 
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 8),
-                new Node(Men.Name, Clothing.Id, 1, 2, 5),
-                new Node(Suits.Name, Men.Id, 2, 3, 4),
-                new Node(Women.Name, Clothing.Id, 1, 6, 7)
+                new ClothingCategory(Clothing.Name, null, 0, 1, 8),
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 2, 5),
+                new ClothingCategory(Suits.Name, Men.Id, 2, 3, 4),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 6, 7)
             );
         }
 
@@ -123,10 +123,10 @@ namespace EF.NestedSetModelSharp.Tests
 
             AssertDb(
                Clothing.RootId,
-               new Node(Clothing.Name, null, 0, 1, 8),
-               new Node(Men.Name, Clothing.Id, 1, 4, 7),
-               new Node(Suits.Name, Men.Id, 2, 5, 6),
-               new Node(Women.Name, Clothing.Id, 1, 2, 3)
+               new ClothingCategory(Clothing.Name, null, 0, 1, 8),
+               new ClothingCategory(Men.Name, Clothing.Id, 1, 4, 7),
+               new ClothingCategory(Suits.Name, Men.Id, 2, 5, 6),
+               new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 3)
            );
         }
 
@@ -141,11 +141,11 @@ namespace EF.NestedSetModelSharp.Tests
             Blouses = _ns.InsertBelow(Women.Id, NewNode("Blouses"), NestedSetModelInsertMode.Left);
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 10),
-                new Node(Women.Name, Clothing.Id, 1, 2, 5),
-                new Node(Blouses.Name, Women.Id, 2, 3, 4),
-                new Node(Men.Name, Clothing.Id, 1, 6, 9),
-                new Node(Suits.Name, Men.Id, 2, 7, 8)
+                new ClothingCategory(Clothing.Name, null, 0, 1, 10),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 5),
+                new ClothingCategory(Blouses.Name, Women.Id, 2, 3, 4),
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 6, 9),
+                new ClothingCategory(Suits.Name, Men.Id, 2, 7, 8)
             );
         }
 
@@ -161,12 +161,12 @@ namespace EF.NestedSetModelSharp.Tests
             Skirts = _ns.InsertNextTo(Blouses.Id, NewNode("Skirts"), NestedSetModelInsertMode.Right);
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 12),
-                new Node(Women.Name, Clothing.Id, 1, 2, 7),
-                new Node(Blouses.Name, Women.Id, 2, 3, 4),
-                new Node(Skirts.Name, Women.Id, 2, 5, 6),
-                new Node(Men.Name, Clothing.Id, 1, 8, 11),
-                new Node(Suits.Name, Men.Id, 2, 9, 10)
+                new ClothingCategory(Clothing.Name, null, 0, 1, 12),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 7),
+                new ClothingCategory(Blouses.Name, Women.Id, 2, 3, 4),
+                new ClothingCategory(Skirts.Name, Women.Id, 2, 5, 6),
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 8, 11),
+                new ClothingCategory(Suits.Name, Men.Id, 2, 9, 10)
             );
         }
 
@@ -183,13 +183,13 @@ namespace EF.NestedSetModelSharp.Tests
             Dresses = _ns.InsertBelow(Women.Id, NewNode("Dresses"), NestedSetModelInsertMode.Right);
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 14),
-                new Node(Women.Name, Clothing.Id, 1, 2, 9),
-                new Node(Blouses.Name, Women.Id, 2, 3, 4),
-                new Node(Skirts.Name, Women.Id, 2, 5, 6),
-                new Node(Dresses.Name, Women.Id, 2, 7, 8),
-                new Node(Men.Name, Clothing.Id, 1, 10, 13),
-                new Node(Suits.Name, Men.Id, 2, 11, 12)
+                new ClothingCategory(Clothing.Name, null, 0, 1, 14),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 9),
+                new ClothingCategory(Blouses.Name, Women.Id, 2, 3, 4),
+                new ClothingCategory(Skirts.Name, Women.Id, 2, 5, 6),
+                new ClothingCategory(Dresses.Name, Women.Id, 2, 7, 8),
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 10, 13),
+                new ClothingCategory(Suits.Name, Men.Id, 2, 11, 12)
             );
         }
 
@@ -210,15 +210,15 @@ namespace EF.NestedSetModelSharp.Tests
             //Assert
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 18),
-                new Node(Women.Name, Clothing.Id, 1, 2, 9),
-                new Node(Blouses.Name, Women.Id, 2, 3, 4),
-                new Node(Skirts.Name, Women.Id, 2, 5, 6),
-                new Node(Dresses.Name, Women.Id, 2, 7, 8),
-                new Node(Men.Name, Clothing.Id, 1, 10, 17),
-                new Node(Suits.Name, Men.Id, 2, 11, 16),
-                new Node(Slacks.Name, Suits.Id, 3, 12, 13),
-                new Node(Jackets.Name, Suits.Id, 3, 14, 15)
+                new ClothingCategory(Clothing.Name, null, 0, 1, 18),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 9),
+                new ClothingCategory(Blouses.Name, Women.Id, 2, 3, 4),
+                new ClothingCategory(Skirts.Name, Women.Id, 2, 5, 6),
+                new ClothingCategory(Dresses.Name, Women.Id, 2, 7, 8),
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 10, 17),
+                new ClothingCategory(Suits.Name, Men.Id, 2, 11, 16),
+                new ClothingCategory(Slacks.Name, Suits.Id, 3, 12, 13),
+                new ClothingCategory(Jackets.Name, Suits.Id, 3, 14, 15)
             );
         }
 
@@ -240,18 +240,18 @@ namespace EF.NestedSetModelSharp.Tests
             //Assert
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 20),
+                new ClothingCategory(Clothing.Name, null, 0, 1, 20),
                 
-                new Node(Women.Name, Clothing.Id, 1, 2, 11),
-                new Node(Blouses.Name, Women.Id, 2, 3, 4),
-                new Node(Skirts.Name, Women.Id, 2, 5, 6),
-                new Node(Dresses.Name, Women.Id, 2, 7, 10),
-                new Node(EveningGowns.Name, Dresses.Id, 3, 8, 9),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 11),
+                new ClothingCategory(Blouses.Name, Women.Id, 2, 3, 4),
+                new ClothingCategory(Skirts.Name, Women.Id, 2, 5, 6),
+                new ClothingCategory(Dresses.Name, Women.Id, 2, 7, 10),
+                new ClothingCategory(EveningGowns.Name, Dresses.Id, 3, 8, 9),
 
-                 new Node(Men.Name, Clothing.Id, 1, 12, 19),
-                 new Node(Suits.Name, Men.Id, 2, 13, 18),
-                 new Node(Slacks.Name, Suits.Id, 3, 14, 15),
-                 new Node(Jackets.Name, Suits.Id, 3, 16, 17)
+                 new ClothingCategory(Men.Name, Clothing.Id, 1, 12, 19),
+                 new ClothingCategory(Suits.Name, Men.Id, 2, 13, 18),
+                 new ClothingCategory(Slacks.Name, Suits.Id, 3, 14, 15),
+                 new ClothingCategory(Jackets.Name, Suits.Id, 3, 16, 17)
 
 
             );
@@ -278,19 +278,19 @@ namespace EF.NestedSetModelSharp.Tests
             //Assert
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 22),
+                new ClothingCategory(Clothing.Name, null, 0, 1, 22),
 
-                new Node(Women.Name, Clothing.Id, 1, 2, 13),
-                new Node(Blouses.Name, Women.Id, 2, 3, 4),
-                new Node(Skirts.Name, Women.Id, 2, 5, 6),
-                new Node(Dresses.Name, Women.Id, 2, 7, 12),
-                new Node(SunDresses.Name, Dresses.Id, 3, 8, 9),
-                new Node(EveningGowns.Name, Dresses.Id, 3, 10, 11),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 13),
+                new ClothingCategory(Blouses.Name, Women.Id, 2, 3, 4),
+                new ClothingCategory(Skirts.Name, Women.Id, 2, 5, 6),
+                new ClothingCategory(Dresses.Name, Women.Id, 2, 7, 12),
+                new ClothingCategory(SunDresses.Name, Dresses.Id, 3, 8, 9),
+                new ClothingCategory(EveningGowns.Name, Dresses.Id, 3, 10, 11),
 
-                 new Node(Men.Name, Clothing.Id, 1, 14, 21),
-                 new Node(Suits.Name, Men.Id, 2, 15, 20),
-                 new Node(Slacks.Name, Suits.Id, 3, 16, 17),
-                 new Node(Jackets.Name, Suits.Id, 3, 18, 19)
+                 new ClothingCategory(Men.Name, Clothing.Id, 1, 14, 21),
+                 new ClothingCategory(Suits.Name, Men.Id, 2, 15, 20),
+                 new ClothingCategory(Slacks.Name, Suits.Id, 3, 16, 17),
+                 new ClothingCategory(Jackets.Name, Suits.Id, 3, 18, 19)
 
 
             );
@@ -318,16 +318,16 @@ namespace EF.NestedSetModelSharp.Tests
             //Assert
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 16),
+                new ClothingCategory(Clothing.Name, null, 0, 1, 16),
 
-                new Node(Women.Name, Clothing.Id, 1, 2, 13),
-                new Node(Blouses.Name, Women.Id, 2, 3, 4),
-                new Node(Skirts.Name, Women.Id, 2, 5, 6),
-                new Node(Dresses.Name, Women.Id, 2, 7, 12),
-                new Node(SunDresses.Name, Dresses.Id, 3, 8, 9),
-                new Node(EveningGowns.Name, Dresses.Id, 3, 10, 11),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 13),
+                new ClothingCategory(Blouses.Name, Women.Id, 2, 3, 4),
+                new ClothingCategory(Skirts.Name, Women.Id, 2, 5, 6),
+                new ClothingCategory(Dresses.Name, Women.Id, 2, 7, 12),
+                new ClothingCategory(SunDresses.Name, Dresses.Id, 3, 8, 9),
+                new ClothingCategory(EveningGowns.Name, Dresses.Id, 3, 10, 11),
 
-                new Node(Men.Name, Clothing.Id, 1, 14, 15)
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 14, 15)
             );
         }
 
@@ -357,17 +357,17 @@ namespace EF.NestedSetModelSharp.Tests
             //Assert
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 22),
-                new Node(Men.Name, Clothing.Id, 1, 20, 21),
-                new Node(Women.Name, Clothing.Id, 1, 2, 19),
-                new Node(Blouses.Name, Women.Id, 2, 3, 4),
-                new Node(Skirts.Name, Women.Id, 2, 5, 6),
-                new Node(Dresses.Name, Women.Id, 2, 7, 12),
-                new Node(SunDresses.Name, Dresses.Id, 3, 8, 9),
-                new Node(EveningGowns.Name, Dresses.Id, 3, 10, 11),
-                new Node(Suits.Name, Women.Id, 2, 13, 18),
-                new Node(Slacks.Name, Suits.Id, 3, 14, 15),
-                new Node(Jackets.Name, Suits.Id, 3, 16, 17)
+                new ClothingCategory(Clothing.Name, null, 0, 1, 22),
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 20, 21),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 19),
+                new ClothingCategory(Blouses.Name, Women.Id, 2, 3, 4),
+                new ClothingCategory(Skirts.Name, Women.Id, 2, 5, 6),
+                new ClothingCategory(Dresses.Name, Women.Id, 2, 7, 12),
+                new ClothingCategory(SunDresses.Name, Dresses.Id, 3, 8, 9),
+                new ClothingCategory(EveningGowns.Name, Dresses.Id, 3, 10, 11),
+                new ClothingCategory(Suits.Name, Women.Id, 2, 13, 18),
+                new ClothingCategory(Slacks.Name, Suits.Id, 3, 14, 15),
+                new ClothingCategory(Jackets.Name, Suits.Id, 3, 16, 17)
                
             );
         }
@@ -393,17 +393,17 @@ namespace EF.NestedSetModelSharp.Tests
             //Assert
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 22),
-                new Node(Men.Name, Clothing.Id, 1, 20, 21),
-                new Node(Women.Name, Clothing.Id, 1, 2, 19),
-                 new Node(Suits.Name, Women.Id, 2, 3, 8),
-                new Node(Slacks.Name, Suits.Id, 3, 4, 5),
-                new Node(Jackets.Name, Suits.Id, 3, 6, 7),
-                new Node(Blouses.Name, Women.Id, 2, 9, 10),
-                new Node(Skirts.Name, Women.Id, 2, 11, 12),
-                new Node(Dresses.Name, Women.Id, 2, 13, 18),
-                new Node(SunDresses.Name, Dresses.Id, 3, 14, 15),
-                new Node(EveningGowns.Name, Dresses.Id, 3, 16, 17)
+                new ClothingCategory(Clothing.Name, null, 0, 1, 22),
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 20, 21),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 19),
+                 new ClothingCategory(Suits.Name, Women.Id, 2, 3, 8),
+                new ClothingCategory(Slacks.Name, Suits.Id, 3, 4, 5),
+                new ClothingCategory(Jackets.Name, Suits.Id, 3, 6, 7),
+                new ClothingCategory(Blouses.Name, Women.Id, 2, 9, 10),
+                new ClothingCategory(Skirts.Name, Women.Id, 2, 11, 12),
+                new ClothingCategory(Dresses.Name, Women.Id, 2, 13, 18),
+                new ClothingCategory(SunDresses.Name, Dresses.Id, 3, 14, 15),
+                new ClothingCategory(EveningGowns.Name, Dresses.Id, 3, 16, 17)
                
 
             );
@@ -429,17 +429,17 @@ namespace EF.NestedSetModelSharp.Tests
             //Assert
             AssertDb(
                 Clothing.RootId,
-                new Node(Clothing.Name, null, 0, 1, 22),
-                new Node(Men.Name, Clothing.Id, 1, 14, 15),
-                new Node(Women.Name, Clothing.Id, 1, 2, 13),
-                new Node(Blouses.Name, Women.Id, 2, 3, 4),
-                new Node(Skirts.Name, Women.Id, 2, 5, 6),
-                new Node(Dresses.Name, Women.Id, 2, 7, 12),
-                new Node(SunDresses.Name, Dresses.Id, 3, 8, 9),
-                new Node(EveningGowns.Name, Dresses.Id, 3, 10, 11),
-                new Node(Suits.Name, Clothing.Id, 1, 16, 21),
-                new Node(Slacks.Name, Suits.Id, 2, 17, 18),
-                new Node(Jackets.Name, Suits.Id, 2, 19, 20)
+                new ClothingCategory(Clothing.Name, null, 0, 1, 22),
+                new ClothingCategory(Men.Name, Clothing.Id, 1, 14, 15),
+                new ClothingCategory(Women.Name, Clothing.Id, 1, 2, 13),
+                new ClothingCategory(Blouses.Name, Women.Id, 2, 3, 4),
+                new ClothingCategory(Skirts.Name, Women.Id, 2, 5, 6),
+                new ClothingCategory(Dresses.Name, Women.Id, 2, 7, 12),
+                new ClothingCategory(SunDresses.Name, Dresses.Id, 3, 8, 9),
+                new ClothingCategory(EveningGowns.Name, Dresses.Id, 3, 10, 11),
+                new ClothingCategory(Suits.Name, Clothing.Id, 1, 16, 21),
+                new ClothingCategory(Slacks.Name, Suits.Id, 2, 17, 18),
+                new ClothingCategory(Jackets.Name, Suits.Id, 2, 19, 20)
 
 
             );
@@ -474,7 +474,7 @@ namespace EF.NestedSetModelSharp.Tests
             _suitsTree = _ns.Delete(Suits.Id);
         }
 
-        private static void AssertDb(int? rootId, params Node[] expectedNodes)
+        private static void AssertDb(int? rootId, params ClothingCategory[] expectedNodes)
         {
             using (var db = new AppDbContext())
             {
