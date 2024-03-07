@@ -3,9 +3,8 @@ using System.Linq.Expressions;
 
 namespace EF.NestedSetModelSharp
 {
-    public class NestedSetModelManager<TDbContext, T, TKey, TNullableKey>
+    public class NestedSetModelManager<T, TKey, TNullableKey>
         where T : class, INestedSetModel<T, TKey, TNullableKey>
-        where TDbContext : DbContext
     {
         private readonly DbContext _db;
 
@@ -21,7 +20,7 @@ namespace EF.NestedSetModelSharp
 
         private readonly DbSet<T> _nodesSet;
 
-        public NestedSetModelManager(TDbContext dbContext)
+        public NestedSetModelManager(DbContext dbContext)
         {
             _db = dbContext;
             _nodesSet = _db.Set<T>();
