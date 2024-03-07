@@ -67,7 +67,7 @@ public class AppDbContext : DbContext
 
 #### Creating Root node
 
-You can simplycreate a root node:
+You can simply create a root node:
 
 ```c#
  _db = new AppDbContext();
@@ -79,4 +79,19 @@ ClothingCategory clothingCateogry = new ClothingCategory {
 }
  
 _ns.InsertRoot(clothingCateogry, NestedSetModelInsertMode.Right);
+```
+
+#### Insert first level child
+```c#
+
+ClothingCategory clothing = new ClothingCategory {
+  Name = "Clothing"
+};
+ClothingCategory men = new ClothingCategory {
+  Name = "Men"
+};
+
+_ns.InsertRoot(clothingRootCateogry.Id, NestedSetModelInsertMode.Right);
+_ns.InsertBelow(clothingRootCateogry.Id, men, NestedSetModelInsertMode.Left);
+
 ```
