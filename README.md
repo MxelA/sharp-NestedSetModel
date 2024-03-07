@@ -1,6 +1,11 @@
 This is a .NET8 package for working with trees in relational databases.
 
+__Contents:__
+- [Theory](#what-are-nested-sets)
+- [Documentation](#documentation)
 
+
+  
 What are nested sets?
 ---------------------
 
