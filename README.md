@@ -23,3 +23,19 @@ a way to effectively store hierarchical data in a relational table. From wikiped
 Nested Set Model shows good performance. It is tuned to be fast for
 getting related nodes. It'is ideally suited for building multi-depth menu or
 categories for shop or similar things.
+
+Documentation
+-------------
+
+Suppose that we have a model `Category`; a `$node` variable is an instance of that model
+and the node that we are manipulating. It can be a fresh model or one from database.
+
+#### Creating Root node
+
+When you simply creating a node, it will be appended to the end of the tree:
+
+```c#
+ _db = new AppDbContext();
+ _ns = new NestedSetModelManager<Node, int, int?>(_db);
+Node clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
+```
