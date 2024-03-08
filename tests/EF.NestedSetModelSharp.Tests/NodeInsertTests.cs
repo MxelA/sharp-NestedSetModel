@@ -45,7 +45,7 @@ namespace EF.NestedSetModelSharp.Tests
             // the results of the last test
             _db = new AppDbContext();
 
-            _db.Database.ExecuteSqlRaw("DELETE FROM \"Nodes\" where \"Id\" != 0");
+            _db.Database.ExecuteSqlRaw("DELETE FROM \"Clothing\" where \"Id\" != 0");
             _ns = new NestedSetModelManager<ClothingCategory, int, int?>(_db);
         }
 
@@ -478,7 +478,7 @@ namespace EF.NestedSetModelSharp.Tests
         {
             using (var db = new AppDbContext())
             {
-                var nodes = db.Nodes.Where(n => n.RootId == rootId);
+                var nodes = db.Clothing.Where(n => n.RootId == rootId);
                 Assert.Equal(expectedNodes.Length, nodes.Count());
                 for (var i = 0; i < expectedNodes.Length; i++)
                 {
