@@ -34,7 +34,7 @@ and the node that we are manipulating. It can be a fresh model or one from datab
 
 Create a class, and you inherit INestedSetModel interface:
 
->```c#
+```c#
 public class ClothingCategory : INestedSetModel<Clothing, int, int?>
 {
      public int Id { get; set; }
