@@ -27,12 +27,12 @@ categories for shop or similar things.
 Documentation
 -------------
 
-Suppose that we have a model `Category`; a `$node` variable is an instance of that model
+Suppose that we have a model `ClothingCategory`, a `$node` variable is an instance of that model
 and the node that we are manipulating. It can be a fresh model or one from database.
 
 #### Setup DB Entity (DB Model)
 
-You create a class, and you inherit INestedSetModel interface:
+Create a class, and you inherit INestedSetModel interface:
 
 ```c#
 public class ClothingCategory : INestedSetModel<Clothing, int, int?>
@@ -56,7 +56,7 @@ In DbContext register ClothingCategory entity
 ```c#
 public class AppDbContext : DbContext
 {
-    public DbSet<ClothingCategory> Nodes { get; set; }
+    public DbSet<ClothingCategory> ClothingCategory { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -65,12 +65,38 @@ public class AppDbContext : DbContext
 }
 ```
 
-#### Creating Root node
+#### Creating root node
 
-You can simplycreate a root node:
+You can simply create a root node:
 
 ```c#
  _db = new AppDbContext();
  _ns = new NestedSetModelManager<ClothingCategory, int, int?>(_db);
-Node clothing = _ns.InsertRoot(NewNode("Clothing"), NestedSetModelInsertMode.Right);
+
+
+ClothingCategory clothingCateogry = new ClothingCategory {
+  Name = "Clothing"
+}
+ 
+_ns.InsertRoot(clothingCateogry, NestedSetModelInsertMode.Right);
+```
+
+#### Insert first level child
+```c#
+ClothingCategory men = new ClothingCategory {
+  Name = "Men"
+};
+
+_ns.InsertBelow(clothingCateogry.Id, men, NestedSetModelInsertMode.Left);
+
+```
+
+#### Insert sibling to right
+```c#
+ClothingCategory women = new ClothingCategory {
+  Name = "Women"
+};
+
+_ns.InsertNextTo(clothingCateogry.Id, women, NestedSetModelInsertMode.Right);
+
 ```
