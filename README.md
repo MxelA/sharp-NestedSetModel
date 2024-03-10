@@ -100,3 +100,36 @@ ClothingCategory women = new ClothingCategory {
 _ns.InsertNextTo(clothingCateogry.Id, women, NestedSetModelInsertMode.Right);
 
 ```
+
+#### Select Descendants
+```c#
+_ns.GetDescendants(clothingCateogry.Id).ToList();
+```
+
+or
+
+```c#
+_db.ClothingCategory.GetDescendants(clothingCateogry).ToList();
+```
+
+#### Select Descendants with deep
+```c#
+_ns.GetDescendants(clothingCateogry.Id, 2).ToList();
+```
+
+or
+
+```c#
+_db.ClothingCategory.GetDescendants(clothingCateogry, 2).ToList();
+```
+
+#### Select Ancestors
+```c#
+_ns.GetAncestors(men.Id).ToList();
+```
+
+or
+
+```c#
+_db.ClothingCategory.GetAncestors(men).ToList();
+```
