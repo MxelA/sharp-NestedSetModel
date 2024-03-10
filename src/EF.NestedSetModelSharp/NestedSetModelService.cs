@@ -4,13 +4,13 @@ using System.Linq.Expressions;
 namespace EF.NestedSetModelSharp
 {
    
-    public class NestedSetModelManager<T, TKey, TNullableKey>
+    public class NestedSetModelService<T, TKey, TNullableKey>
         where T : class, INestedSetModel<T, TKey, TNullableKey>
     {
         private readonly DbSet<T> _nodesSet;
         private readonly DbContext _db;
 
-        public NestedSetModelManager(DbContext dbContext)
+        public NestedSetModelService(DbContext dbContext)
         {
             _db = dbContext;
             _nodesSet = _db.Set<T>();
@@ -167,7 +167,7 @@ namespace EF.NestedSetModelSharp
             }
 
             var difference = highestRight - lowestLeft;
-            //Get root node
+            
             var nodeTreeRoot = nodeArray.Single(n => n.Left == lowestLeft);
 
             T parent = null;
@@ -289,9 +289,9 @@ namespace EF.NestedSetModelSharp
                 {
                     throw new ArgumentException(string.Format("Unable to find node parent with ID of {0}", parentId));
                 }
-                var parent1 = parent;
+                var temp = parent;
                 var rightMostImmediateChild = GetNodes(parent.RootId)
-                    .Where(s => s.Left >= parent1.Left && s.Right <= parent1.Right && s.Level == parent1.Level + 1)
+                    .Where(s => s.Left >= temp.Left && s.Right <= temp.Right && s.Level == temp.Level + 1)
                     .OrderByDescending(s => s.Right)
                     .ToList()
                     .FirstOrDefault(n => !n.Moving)

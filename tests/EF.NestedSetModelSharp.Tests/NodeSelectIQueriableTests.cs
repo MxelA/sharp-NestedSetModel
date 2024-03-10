@@ -4,7 +4,7 @@ namespace EF.NestedSetModelSharp.Tests
 {
     public class NodeSelectIQueriableTests : IDisposable
     {
-        NestedSetModelManager<ClothingCategory, int, int?> _ns;
+        NestedSetModelService<ClothingCategory, int, int?> _ns;
         private AppDbContext _db;
         public ClothingCategory? Clothing { get; set; }
         public ClothingCategory? Men { get; set; }
@@ -46,7 +46,7 @@ namespace EF.NestedSetModelSharp.Tests
             _db = new AppDbContext();
 
             _db.Database.ExecuteSqlRaw("DELETE FROM \"Clothing\" where \"Id\" != 0");
-            _ns = new NestedSetModelManager<ClothingCategory, int, int?>(_db);
+            _ns = new NestedSetModelService<ClothingCategory, int, int?>(_db);
         }
 
         public void Dispose()
