@@ -3,10 +3,18 @@ using System.Linq.Expressions;
 
 namespace EF.NestedSetModelSharp
 {
+   
     public class NestedSetModelManager<T, TKey, TNullableKey>
         where T : class, INestedSetModel<T, TKey, TNullableKey>
     {
+        private readonly DbSet<T> _nodesSet;
         private readonly DbContext _db;
+
+        public NestedSetModelManager(DbContext dbContext)
+        {
+            _db = dbContext;
+            _nodesSet = _db.Set<T>();
+        }
 
         private static IQueryable<T> QueryById(IQueryable<T> nodes, TKey id)
         {
@@ -18,13 +26,6 @@ namespace EF.NestedSetModelSharp
             return _nodesSet.Where(PropertyEqualsExpression(nameof(INestedSetModel<T, TKey, TNullableKey>.RootId), rootId));
         }
 
-        private readonly DbSet<T> _nodesSet;
-
-        public NestedSetModelManager(DbContext dbContext)
-        {
-            _db = dbContext;
-            _nodesSet = _db.Set<T>();
-        }
 
         private Expression<Func<T, bool>> PropertyEqualsExpression(string propertyName, TKey key)
         {
@@ -141,12 +142,14 @@ namespace EF.NestedSetModelSharp
             return Insert(default(TNullableKey), siblingId, nodeTree, insertMode).First();
         }
 
+
         private List<T> Insert(TNullableKey parentId, TNullableKey siblingId, IEnumerable<T> nodeTree,
             NestedSetModelInsertMode insertMode)
         {
             var nodeArray = nodeTree as T[] ?? nodeTree.ToArray();
             var lowestLeft = nodeArray.Min(n => n.Left);
             var highestRight = nodeArray.Max(n => n.Right);
+            
             if (lowestLeft == 0 && highestRight == 0)
             {
                 if (nodeArray.Length == 1)
@@ -162,32 +165,18 @@ namespace EF.NestedSetModelSharp
                     throw new ArgumentException("Node tree must have left right values", nameof(nodeTree));
                 }
             }
+
             var difference = highestRight - lowestLeft;
+            //Get root node
             var nodeTreeRoot = nodeArray.Single(n => n.Left == lowestLeft);
+
             T parent = null;
             T sibling = null;
+
             var isRoot = Equals(parentId, default(TNullableKey)) && Equals(siblingId, default(TNullableKey));
-            if (!Equals(parentId, default(TNullableKey)) &&
-                insertMode == NestedSetModelInsertMode.Right)
-            {
-                parent = GetNode(parentId);
-                if (parent == null)
-                {
-                    throw new ArgumentException(string.Format("Unable to find node parent with ID of {0}", parentId));
-                }
-                var parent1 = parent;
-                var rightMostImmediateChild = GetNodes(parent.RootId)
-                    .Where(s => s.Left >= parent1.Left && s.Right <= parent1.Right && s.Level == parent1.Level + 1)
-                    .OrderByDescending(s => s.Right)
-                    .ToList()
-                    .FirstOrDefault(n => !n.Moving)
-                    ;
-                sibling = rightMostImmediateChild;
-                if (sibling != null)
-                {
-                    siblingId = (TNullableKey)(object)sibling.Id;
-                }
-            }
+
+            GetMostRightImmediateChild(insertMode, parentId, ref parent, ref sibling, ref siblingId);
+            
             int? siblingLeft = null;
             int? siblingRight = null;
             var rootId = default(TNullableKey);
@@ -212,6 +201,111 @@ namespace EF.NestedSetModelSharp
                 parentLeft = parent.Left;
                 rootId = parent.RootId;
             }
+
+            //Set level of nodes
+            SetNodesLevel(parent, ref nodeArray);
+            
+            var left = 0;
+            var right = 0;
+            CalculateLeftAndRightValues(difference, insertMode, rootId, sibling, siblingLeft, siblingRight, parent, parentLeft, ref left, ref right);
+            
+            var leftChange = left - nodeTreeRoot.Left;
+            var rightChange = right - nodeTreeRoot.Right;
+            foreach (var node in nodeArray)
+            {
+                node.Left += leftChange;
+                node.Right += rightChange;
+            }
+            nodeTreeRoot.ParentId = parentId;
+            var newNodes = nodeArray.Where(n => !n.Moving).ToList();
+            if (newNodes.Any())
+            {
+                _nodesSet.AddRange(newNodes);
+            }
+            var movingNodes = nodeArray.Where(n => n.Moving).ToList();
+            foreach (var node in movingNodes)
+            {
+                node.Moving = false;
+            }
+            _db.SaveChanges();
+            // Update the root ID
+            if (isRoot)
+            {
+                nodeTreeRoot.RootId = ToNullableKey(nodeTreeRoot.Id);
+                nodeTreeRoot.Root = nodeTreeRoot;
+                _db.SaveChanges();
+            }
+            else if (Equals(rootId, default(TNullableKey)))
+            {
+                var rootIds = newNodes.Select(n => n.RootId).Distinct().ToArray();
+                if (rootIds.Length > 1)
+                {
+                    throw new ArgumentException("Unable to identify root node ID of node tree as multiple have been supplied.");
+                }
+                if (Equals(rootId, default(TNullableKey)) &&
+                    rootIds.Length == 0 || (rootIds.Length == 1 && Equals(rootIds[0], default(TNullableKey))))
+                {
+                    rootId = rootIds[0];
+                    //nodeTreeRoot.RootId = rootId;//ToNullableKey(GetNodes(rootId).Single(n => n.Left == 1).Id);
+                }
+            }
+            if (!Equals(rootId, default(TNullableKey)))
+            {
+                foreach (var newNode in newNodes)
+                {
+                    newNode.RootId = rootId;
+                }
+                _db.SaveChanges();
+            }
+            else if (!isRoot)
+            {
+                throw new Exception("Unable to determine root ID of non-root node");
+            }
+            // Update the parent IDs now we have them
+            foreach (var newNode in newNodes)
+            {
+                if (newNode != nodeTreeRoot)
+                {
+                    var path = GetPathToNode(newNode, newNodes).Reverse();
+                    var current = newNode;
+                    foreach (var ancestor in path)
+                    {
+                        current.ParentId = (TNullableKey)(object)ancestor.Id;
+                        current = ancestor;
+                    }
+                }
+            }
+            _db.SaveChanges();
+            return newNodes;
+        }
+
+        private void GetMostRightImmediateChild(NestedSetModelInsertMode insertMode, TNullableKey? parentId, ref T? parent, ref T? sibling, ref TNullableKey? siblingId)
+        {
+            if (!Equals(parentId, default(TNullableKey)) &&
+                insertMode == NestedSetModelInsertMode.Right)
+            {
+                parent = GetNode(parentId);
+                if (parent == null)
+                {
+                    throw new ArgumentException(string.Format("Unable to find node parent with ID of {0}", parentId));
+                }
+                var parent1 = parent;
+                var rightMostImmediateChild = GetNodes(parent.RootId)
+                    .Where(s => s.Left >= parent1.Left && s.Right <= parent1.Right && s.Level == parent1.Level + 1)
+                    .OrderByDescending(s => s.Right)
+                    .ToList()
+                    .FirstOrDefault(n => !n.Moving)
+                    ;
+                sibling = rightMostImmediateChild;
+                if (sibling != null)
+                {
+                    siblingId = (TNullableKey)(object)sibling.Id;
+                }
+            }
+        }
+
+        private void SetNodesLevel(T? parent, ref T[] nodeArray)
+        {
             var minLevel = nodeArray.Min(n => n.Level);
             foreach (var node in nodeArray)
             {
@@ -221,8 +315,10 @@ namespace EF.NestedSetModelSharp
                     node.Level += parent.Level + 1;
                 }
             }
-            var left = 0;
-            var right = 0;
+        }
+
+        private void CalculateLeftAndRightValues(int difference, NestedSetModelInsertMode insertMode, TNullableKey? rootId, T? sibling, int? siblingLeft, int? siblingRight, T? parent, int? parentLeft, ref int left, ref int right)
+        {
             switch (insertMode)
             {
                 case NestedSetModelInsertMode.Left:
@@ -306,74 +402,6 @@ namespace EF.NestedSetModelSharp
                     }
                     break;
             }
-            var leftChange = left - nodeTreeRoot.Left;
-            var rightChange = right - nodeTreeRoot.Right;
-            foreach (var node in nodeArray)
-            {
-                node.Left += leftChange;
-                node.Right += rightChange;
-            }
-            nodeTreeRoot.ParentId = parentId;
-            var newNodes = nodeArray.Where(n => !n.Moving).ToList();
-            if (newNodes.Any())
-            {
-                _nodesSet.AddRange(newNodes);
-            }
-            var movingNodes = nodeArray.Where(n => n.Moving).ToList();
-            foreach (var node in movingNodes)
-            {
-                node.Moving = false;
-            }
-            _db.SaveChanges();
-            // Update the root ID
-            if (isRoot)
-            {
-                nodeTreeRoot.RootId = ToNullableKey(nodeTreeRoot.Id);
-                nodeTreeRoot.Root = nodeTreeRoot;
-                _db.SaveChanges();
-            }
-            else if (Equals(rootId, default(TNullableKey)))
-            {
-                var rootIds = newNodes.Select(n => n.RootId).Distinct().ToArray();
-                if (rootIds.Length > 1)
-                {
-                    throw new ArgumentException("Unable to identify root node ID of node tree as multiple have been supplied.");
-                }
-                if (Equals(rootId, default(TNullableKey)) &&
-                    rootIds.Length == 0 || (rootIds.Length == 1 && Equals(rootIds[0], default(TNullableKey))))
-                {
-                    rootId = rootIds[0];
-                    //nodeTreeRoot.RootId = rootId;//ToNullableKey(GetNodes(rootId).Single(n => n.Left == 1).Id);
-                }
-            }
-            if (!Equals(rootId, default(TNullableKey)))
-            {
-                foreach (var newNode in newNodes)
-                {
-                    newNode.RootId = rootId;
-                }
-                _db.SaveChanges();
-            }
-            else if (!isRoot)
-            {
-                throw new Exception("Unable to determine root ID of non-root node");
-            }
-            // Update the parent IDs now we have them
-            foreach (var newNode in newNodes)
-            {
-                if (newNode != nodeTreeRoot)
-                {
-                    var path = GetPathToNode(newNode, newNodes).Reverse();
-                    var current = newNode;
-                    foreach (var ancestor in path)
-                    {
-                        current.ParentId = (TNullableKey)(object)ancestor.Id;
-                        current = ancestor;
-                    }
-                }
-            }
-            _db.SaveChanges();
-            return newNodes;
         }
 
         private static TNullableKey ToNullableKey(TKey id)
