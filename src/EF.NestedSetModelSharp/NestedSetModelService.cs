@@ -170,12 +170,12 @@ namespace EF.NestedSetModelSharp
             
             var nodeTreeRoot = nodeArray.Single(n => n.Left == lowestLeft);
 
-            T parent = null;
-            T sibling = null;
+            T? parent = null;
+            T? sibling = null;
 
             var isRoot = Equals(parentId, default(TNullableKey)) && Equals(siblingId, default(TNullableKey));
 
-            GetMostRightImmediateChild(insertMode, parentId, ref parent, ref sibling, ref siblingId);
+            (parent, sibling, siblingId)  = GetMostRightImmediateChild(insertMode, parentId, siblingId);
             
             int? siblingLeft = null;
             int? siblingRight = null;
@@ -203,7 +203,7 @@ namespace EF.NestedSetModelSharp
             }
 
             //Set level of nodes
-            SetNodesLevel(parent, ref nodeArray);
+            nodeArray = SetNodesLevel(parent, nodeArray);
             
             var left = 0;
             var right = 0;
@@ -279,8 +279,11 @@ namespace EF.NestedSetModelSharp
             return newNodes;
         }
 
-        private void GetMostRightImmediateChild(NestedSetModelInsertMode insertMode, TNullableKey? parentId, ref T? parent, ref T? sibling, ref TNullableKey? siblingId)
+        private (T?, T?, TNullableKey?) GetMostRightImmediateChild(NestedSetModelInsertMode insertMode, TNullableKey? parentId, TNullableKey? siblingId)
         {
+            T parent = null;
+            T sibling = null;
+
             if (!Equals(parentId, default(TNullableKey)) &&
                 insertMode == NestedSetModelInsertMode.Right)
             {
@@ -302,9 +305,11 @@ namespace EF.NestedSetModelSharp
                     siblingId = (TNullableKey)(object)sibling.Id;
                 }
             }
+
+            return (parent, sibling, siblingId);
         }
 
-        private void SetNodesLevel(T? parent, ref T[] nodeArray)
+        private T[] SetNodesLevel(T? parent, T[] nodeArray)
         {
             var minLevel = nodeArray.Min(n => n.Level);
             foreach (var node in nodeArray)
@@ -315,6 +320,8 @@ namespace EF.NestedSetModelSharp
                     node.Level += parent.Level + 1;
                 }
             }
+
+            return nodeArray;
         }
 
         private void CalculateLeftAndRightValues(int difference, NestedSetModelInsertMode insertMode, TNullableKey? rootId, T? sibling, int? siblingLeft, int? siblingRight, T? parent, int? parentLeft, ref int left, ref int right)
