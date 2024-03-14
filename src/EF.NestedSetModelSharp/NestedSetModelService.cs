@@ -281,8 +281,8 @@ namespace EF.NestedSetModelSharp
 
         private (T?, T?, TNullableKey?) GetMostRightImmediateChild(NestedSetModelInsertMode insertMode, TNullableKey? parentId, TNullableKey? siblingId)
         {
-            T parent = null;
-            T sibling = null;
+            T? parent = null;
+            T? sibling = null;
 
             if (!Equals(parentId, default(TNullableKey)) &&
                 insertMode == NestedSetModelInsertMode.Right)
@@ -302,7 +302,7 @@ namespace EF.NestedSetModelSharp
                 sibling = rightMostImmediateChild;
                 if (sibling != null)
                 {
-                    siblingId = (TNullableKey)(object)sibling.Id;
+                    siblingId = (TNullableKey?)(object)sibling.Id;
                 }
             }
 
